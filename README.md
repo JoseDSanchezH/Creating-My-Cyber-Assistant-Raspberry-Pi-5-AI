@@ -5,7 +5,11 @@
 I was inspired by Mr. Terrific's T-Spheres from the 2025 Superman film; I want to build my own assistant rather than a strict prop replica.
 I want to carry it between real places; I want it to understand its new surroundings, build a memory of what it's learned over time, hold a conversation, listen, remember, and run locally on the device itself. Maybe later, have its own cloud system. 
 
-**Status: early build, in progress.** This repo is a running log of the build as it happens, not a finished project. Follow along below.
+**Status: paused, not cancelled.** I pivoted this same Pi 5 to a networking project first, see the update right below. The original idea and build log stay below for the record, and I'll pick this back up later.
+
+## Update (2026-09-17): pivoted to a networking project
+
+The AI assistant is on hold. I reused this same Pi 5 for something I could actually finish right now: learning networking hands on instead of treating DNS, DHCP, and VPNs as disconnected exam topics. New goal, new build log, both under **Networking Project** further down. Original idea and build log below, unchanged.
 
 ## Why I'm building this
 
@@ -89,6 +93,75 @@ Before the Pi can do anything, it needs an operating system (the base software e
 
 
 Good reminder that "recommended" just means best for most people, not best for what I'm actually building. Card's ready; next step is putting it in the Pi and seeing if it boots.
+
+---
+
+# Networking Project: Pi-hole + WireGuard
+
+## Why
+
+I've been treating DNS, DHCP, and VPNs as disconnected exam topics instead of things I could actually run myself. This project turns the same Pi 5 into a real DNS server for the house (Pi-hole) and a VPN endpoint (WireGuard), so I can watch DNS resolution happen instead of just knowing the definition, and reach my home network securely from outside it.
+
+## Goal
+
+- **Pi-hole**: network-wide DNS server, ad/tracker blocking, and a live query log so I can see what every device on the network is actually looking up
+- **WireGuard**: VPN endpoint for secure remote access into the home network (not started yet, next up once Pi-hole is solid)
+
+## Reflashing the microSD card
+
+Reused the same card from the AI assistant build above. This time it came up corrupted, Windows couldn't even see a filesystem on it. Reflashing with Raspberry Pi Imager should have been the easy part; instead it turned into its own troubleshooting exercise:
+
+1. **The card reader adapter was the actual problem, not the card.** The first microSD-to-USB adapter I used reported the card as present but unreadable, and later as "no media" at all. Swapped to a different adapter and the exact same card read back perfectly. Lesson: when a card looks dead, test it in a second adapter before writing it off.
+2. **Writes kept failing mid-process** with "storage device was removed while writing," without me touching anything. Turned out to be the front-panel USB port on my tower case; those route through an extra internal cable and are known to be less reliable for sustained transfers than the ports built directly into the motherboard. Moved the adapter to a rear port and the write finally completed and verified clean.
+3. Also picked the wrong device in Imager's storage picker once during all the swapping around, no real harm done, but a good reminder to read the exact device name and size before hitting write every single time, not assume the right one's still selected.
+
+**A gotcha with Imager's advanced settings:** current Raspberry Pi OS builds use cloud-init style config (`user-data`, `network-config`) to apply the hostname/SSH/WiFi settings from Imager's advanced options, replacing the older `firstrun.sh` approach. First pass through, my settings didn't actually take, the files came out as untouched defaults, because closing that dialog isn't the same as clicking **Save** inside it. Caught it by checking the files directly before ever putting the card back in the Pi, which saved a wasted boot attempt.
+
+## Installing Pi-hole
+
+Connected over SSH and updated the system first:
+
+![SSH in and update](screenshots/01-ssh-in-and-update.png)
+
+Ran Pi-hole's official install script:
+
+```
+curl -sSL https://install.pi-hole.net | sudo bash
+```
+
+![Pi-hole install starting](screenshots/02-pihole-install-start.png)
+
+The installer walks through a handful of screens:
+
+![Pi-hole welcome screen](screenshots/03-pihole-welcome.png)
+
+Picked Cloudflare as the upstream DNS provider, where Pi-hole forwards anything it doesn't block:
+
+![Choosing Cloudflare](screenshots/04-choosing-cloudflare.png)
+
+Went with the default StevenBlack Unified Hosts List to start, it's the standard, well-maintained blocklist most Pi-hole installs run on day one:
+
+![StevenBlack blocklist](screenshots/05-stevenblack-blocklist.png)
+
+Enabled query logging, this is what actually lets you watch DNS lookups happen in real time instead of just knowing Pi-hole is blocking things somewhere in the background:
+
+![Enable query logging](screenshots/06-enable-query-logging.png)
+
+Left privacy mode at "Show everything" for now, since the whole point right now is visibility into what's happening on the network, not hiding it from myself:
+
+![Privacy mode](screenshots/07-privacy-mode.png)
+
+Installer finished, detected my network interface and IP, pulled Pi-hole's core repos, and installed FTL (the DNS engine). Landed on the admin login screen:
+
+![Pi-hole login](screenshots/08-pihole-login.png)
+
+Pointed my PC's DNS at the Pi to test it, and the query log immediately started filling with real lookups from my computer, some blocked, most just resolved normally. That's the concrete version of "this is what DNS actually does," not just the textbook definition.
+
+## What's next
+
+- Point the router's DNS at the Pi so the whole house benefits, not just one test device
+- Set up WireGuard for secure remote access
+- Stretch goal: revisit VLAN segmentation to isolate IoT devices, once this is solid
 
 
 
