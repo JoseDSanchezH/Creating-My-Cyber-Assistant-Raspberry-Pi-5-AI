@@ -95,7 +95,27 @@ Before the Pi can do anything, it needs an operating system (the base software e
 Good reminder that "recommended" just means best for most people, not best for what I'm actually building. Card's ready; next step is putting it in the Pi and seeing if it boots.
 
 ---
+# How Connecting the Cooler to the Raspberry
 
+The cooling fan is bought separately and must be assembled to the Raspberry Pi 5 processor. We need to align the heat sink and the cooling fan and make sure that the 2 spring loaded push pins line up with the two dedicated mounting holes on the board.
+<img width="640" height="480" alt="Cooler for Raspberrypi" src="https://github.com/user-attachments/assets/5aba4474-5a20-44e0-b262-de72c5757254" />
+<img width="640" height="480" alt="inserthole for cooler" src="https://github.com/user-attachments/assets/483435d2-b962-4c91-92c9-13a82f418df1" />
+
+I press down gently on the 2 push pins until they firmly snap into the Raspberry Pi 5 board holes, locking the cooler in place. Next, I plugged in the fan's small power connector to the port right next to the USB ports on the edge of the Raspberry Pi 5 board.
+
+<img width="640" height="480" alt="back of Cooler" src="https://github.com/user-attachments/assets/98a235e2-3d4d-4ee3-a1ff-54e9bb84603c" />
+
+
+<img width="640" height="480" alt="cooler attched part 3" src="https://github.com/user-attachments/assets/aa840a97-4fc4-44cc-9a88-d0d9132479ed" />
+
+<img width="640" height="480" alt="Cooler Attached" src="https://github.com/user-attachments/assets/fe366c01-a528-4ae1-8e06-33026f27beca" />
+
+Now that that is all set, I can insert the SD card, plug in the Raspberry Pi to the outlet, and turn it on.
+
+<img width="640" height="480" alt="Raspberrypi5 plugged in wall" src="https://github.com/user-attachments/assets/ed84eefe-a8d6-41d8-8ce2-331ba2963518" />
+
+
+---
 # Networking Project: Pi-hole + WireGuard
 
 ## Why
