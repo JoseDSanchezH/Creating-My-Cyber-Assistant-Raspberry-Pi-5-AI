@@ -147,11 +147,11 @@ Also hit a gotcha with Imager's advanced settings. Current Raspberry Pi OS build
 
 ## Installing Pi-hole
 
-Connected over SSH and updated the system first:
+I connected over SSH and updated the system first:
 
 ![SSH in and update](screenshots/01-ssh-in-and-update.png)
 
-Ran Pi-hole's install script:
+I ran Pi-hole's install script:
 
 ```
 curl -sSL https://install.pi-hole.net | sudo bash
@@ -161,33 +161,33 @@ curl -sSL https://install.pi-hole.net | sudo bash
 
 ![Pi-hole welcome screen](screenshots/03-pihole-welcome.png)
 
-Picked Cloudflare as the upstream DNS:
+I picked Cloudflare as the upstream DNS:
 
 ![Choosing Cloudflare](screenshots/04-choosing-cloudflare.png)
 
-Left the default StevenBlack blocklist checked:
+I left the default StevenBlack blocklist checked:
 
 ![StevenBlack blocklist](screenshots/05-stevenblack-blocklist.png)
 
-Turned on query logging so I can actually watch DNS lookups happen instead of guessing:
+I turned on query logging so I can actually watch DNS lookups happen instead of guessing:
 
 ![Enable query logging](screenshots/06-enable-query-logging.png)
 
-Left privacy mode on "Show everything":
+I left privacy mode on "Show everything":
 
 ![Privacy mode](screenshots/07-privacy-mode.png)
 
-Installer picked up my network interface and IP, pulled Pi-hole's repos, installed FTL, landed on the login screen:
+The installer picked up my network interface and IP, pulled Pi-hole's repos, installed FTL, and landed on the login screen:
 
 ![Pi-hole login](screenshots/08-pihole-login.png)
 
-Pointed my PC's DNS at the Pi. Query log started filling up right away, some blocked, most just resolved normal.
+I pointed my PC's DNS at the Pi. Query log started filling up right away, some blocked, most just resolved normal.
 
-Pointed the router's DNS at the Pi too, not just my PC. Whole house is covered now.
+I pointed the router's DNS at the Pi too, not just my PC. Whole house is covered now.
 
 ## Setting up WireGuard
 
-Installed PiVPN to handle it:
+I installed PiVPN to handle it:
 
 ```
 curl -L https://install.pivpn.io | bash
@@ -195,27 +195,27 @@ curl -L https://install.pivpn.io | bash
 
 ![Installing WireGuard](screenshots/09-installing-wireguard.png)
 
-It asked if the Pi's IP was reserved through DHCP reservation on the router. Went looking on the Verizon admin page, the Devices menu only shows connection stats, no reservation option there. Skipped it since the Pi stays connected most of the time anyway.
+It asked if my Pi's IP was reserved through DHCP reservation on the router. I went looking on the Verizon admin page, the Devices menu only shows connection stats, no reservation option there. I skipped it since the Pi stays connected most of the time anyway.
 
 ![DHCP reservation prompt](screenshots/10-dhcp-reservation.png)
 
-Picked WireGuard over OpenVPN.
+I picked WireGuard over OpenVPN.
 
 ![Choosing WireGuard](screenshots/11-choose-wireguard.png)
 
-It found the Pi-hole install already on the box and asked if VPN clients should use it as DNS too. Said yes, so ad blocking still works on my phone when I'm connected remotely.
+It found the Pi-hole install already on the box and asked if VPN clients should use it as DNS too. I said yes, so ad blocking still works on my phone when I'm connected remotely.
 
 ![Pi-hole DNS for VPN clients](screenshots/12-pihole-dns-question.png)
 
-Asked whether clients connect using a public IP or a DNS name. Verizon residential doesn't hand out a static IP, so went with a DNS name instead.
+It asked whether clients connect using a public IP or a DNS name. My Verizon connection doesn't come with a fixed public IP, it can change on its own without me touching anything. So I went with a DNS name instead.
 
 ![Public IP or DNS name](screenshots/13-public-ip-or-dns.png)
 
-Set up a free DuckDNS address for that.
+I set up a free DuckDNS address for that. There's a small script running on the Pi that checks in with DuckDNS and tells it my current IP, so my phone can always find my house even if my IP changes, without me having to do anything.
 
 ![DuckDNS setup](screenshots/14-duckdns-setup.png)
 
-Turned on unattended security upgrades, since this Pi is reachable from outside now.
+I turned on unattended security upgrades, since this Pi is reachable from outside now.
 
 ![Unattended upgrades prompt](screenshots/15-unattended-upgrades.png)
 
