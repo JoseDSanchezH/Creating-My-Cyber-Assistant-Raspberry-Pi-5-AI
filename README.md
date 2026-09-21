@@ -25,10 +25,10 @@ I'm building this as a hands-on project to prove out real IT/hardware skills —
 
 | Phase | Goal | Status |
 |---|---|---|
-| 0 — The Brain | Get the core AI stack working on a desk: it hears you, thinks, sees through a camera, talks back, and remembers a fact | In progress |
-| 1 — The Shell | Add battery power and a carryable case so it's actually portable | Not started |
+| 0 — The Brain | Get the core AI stack working on a desk: it hears you, thinks, sees through a camera, talks back, and remembers a fact | Changed |
+| 1 — The Shell | Add battery power and a carryable case so it's actually portable | Finished |
 | 2 — Integration | Full memory system working reliably while carried between real locations | Not started |
-| 3 — The Showcase | Demo video and final write-up | Not started |
+| 3 — The Showcase | Pictures and final write-up | Not started |
 
 
 ## Build Log
