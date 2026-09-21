@@ -183,10 +183,50 @@ Installer picked up my network interface and IP, pulled Pi-hole's repos, install
 
 Pointed my PC's DNS at the Pi. Query log started filling up right away, some blocked, most just resolved normal.
 
+Pointed the router's DNS at the Pi too, not just my PC. Whole house is covered now.
+
+## Setting up WireGuard
+
+Installed PiVPN to handle it:
+
+```
+curl -L https://install.pivpn.io | bash
+```
+
+![Installing WireGuard](screenshots/09-installing-wireguard.png)
+
+It asked if the Pi's IP was reserved through DHCP reservation on the router. Went looking on the Verizon admin page, the Devices menu only shows connection stats, no reservation option there. Skipped it since the Pi stays connected most of the time anyway.
+
+![DHCP reservation prompt](screenshots/10-dhcp-reservation.png)
+
+Picked WireGuard over OpenVPN.
+
+![Choosing WireGuard](screenshots/11-choose-wireguard.png)
+
+It found the Pi-hole install already on the box and asked if VPN clients should use it as DNS too. Said yes, so ad blocking still works on my phone when I'm connected remotely.
+
+![Pi-hole DNS for VPN clients](screenshots/12-pihole-dns-question.png)
+
+Asked whether clients connect using a public IP or a DNS name. Verizon residential doesn't hand out a static IP, so went with a DNS name instead.
+
+![Public IP or DNS name](screenshots/13-public-ip-or-dns.png)
+
+Set up a free DuckDNS address for that.
+
+![DuckDNS setup](screenshots/14-duckdns-setup.png)
+
+Turned on unattended security upgrades, since this Pi is reachable from outside now.
+
+![Unattended upgrades prompt](screenshots/15-unattended-upgrades.png)
+
+Installation complete.
+
+![Installation complete](screenshots/16-installation-complete.png)
+
 ## What's next
 
-- Point the router's DNS at the Pi so the whole house is covered, not just my PC
-- Set up WireGuard
+- Forward UDP port 51820 on the router to the Pi
+- Run `pivpn add` for a client profile, then `pivpn -qr` to get it on my phone
 - Maybe come back to VLANs for the IoT stuff later
 
 
