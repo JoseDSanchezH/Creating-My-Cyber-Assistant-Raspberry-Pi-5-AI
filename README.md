@@ -131,11 +131,19 @@ DNS, DHCP, and VPNs were just exam topics before this. Now I'm running them myse
 
 Reused the same card from the AI assistant build above. This time Windows couldn't even see a filesystem on it.
 
-1. First adapter said the card was there but unreadable, then said no media at all. Swapped to a different adapter, same card read fine. It was the adapter, not the card.
-2. Writes kept failing mid-write: "storage device was removed while writing," without me touching anything. Adapter was in the front USB port on the tower. Moved it to a rear port, write finished clean.
-3. Picked the wrong drive in Imager's storage picker once in the middle of all the adapter swapping. No harm done, just read the device name and size before hitting write every time now.
+But I ran into a problem. I needed to reflash the microSD card several times.
 
-Also hit a gotcha with Imager's advanced settings. Current Raspberry Pi OS builds use `user-data` and `network-config` files to set hostname, SSH, and WiFi, instead of the old `firstrun.sh`. First pass, none of my settings actually took, the files came back as untouched defaults. Closing that dialog isn't the same as hitting Save inside it. Caught it by checking the files on the card directly before putting it back in the Pi.
+The first adapter said the card was there but unreadable, then said no media at all. I then swapped to a different adapter; the same card read fine. It was the adapter, not the card.
+
+Writes kept failing mid-write: "storage device was removed while writing," without me touching anything. The adapter was in the front USB port on the tower, so I moved it to a rear port; write finished cleanly.
+
+
+I unfortunately picked the wrong drive in Imager's storage picker once in the middle of all the adapter swapping. No harm done; just read the device name and size before hitting write every time now.
+
+# Lesson Learned
+2 things: Slow down while experimenting, and do not use the tower of the computer you build for data transfers via USB ports. Always use the rear USB ports attached to the motherboard to have a successful data transfer. 
+
+Also hit a gotcha with Imager's advanced settings. Current Raspberry Pi OS builds use `user-data` and `network-config` files to set hostname, SSH, and WiFi, instead of the old `firstrun.sh`. First pass, none of my settings actually took; the files came back as untouched defaults. Closing that warning window isn't the same as hitting Save inside it. Caught it by checking the files on the card directly before putting it back in the Pi.
 
 ## Installing Pi-hole
 
