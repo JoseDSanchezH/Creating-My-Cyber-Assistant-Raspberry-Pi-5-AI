@@ -1,0 +1,27 @@
+## Problems I'm having
+
+1. Right now, since deploying Pi-hole and WireGuard, I wanted to see if my iPhone will be going through Pi-hole for ads to be blocked.
+I went on my iPhone, went to a YouTube video, and an ad popped up. Then I went to Pi-hole to see if my device was shown in the query log. I looked for the exact domain, but it seems like it never went through.
+My iPhone DNS requests aren't reaching Pi-hole at all. 
+
+# Steps taken 
+
+1. Noticed Pi-hole seemed to only be blocking ads on my PC, not my other devices, so I went looking into why.
+2. Checked Pi-hole's Query Log to see if my other devices were even showing up in there at all.
+3. Found something strange: every device was appearing under one single IP address instead of showing up separately.
+4. Learned that's actually normal. My router relays DNS requests to Pi-hole using its own IP address, so Pi-hole can't tell devices apart by IP alone.
+5. Tested it directly on my iPhone, loaded a page, then checked the query log for that domain. Nothing showed up, so my iPhone's DNS requests weren't reaching Pi-hole.
+6. Thought about resetting the router but held off, since a factory reset would've wiped the DNS settings I already configured.
+7. Realized I never actually rebooted the router since I first set up Pi-hole, so I did a normal reboot (not a factory reset) to force every device to grab fresh settings.
+8. Checked iCloud Private Relay on my phone; it was already off.
+9. Checked the WiFi DNS setting on my phone; it was set to Automatic.
+10. Looked closer at what Automatic was actually using and found two DNS addresses listed, one starting with 2---- and one that was 1-----.
+11. Figured out the 2--- one was an IPv6 address handed out separately by the router, and my iPhone was choosing that over the IPv4 address pointed at Pi-hole, which is why it was skipping Pi-hole completely.
+12. I asked what DuckDNS does and learned it's not a static IP; it's Dynamic DNS, which keeps a fixed hostname pointing to my house even though my actual IP address changes.
+13. Moved on to the next thing on my list, VLANs for my IoT devices. Found out my router doesn't actually support real VLANs.
+14. Found a built-in IoT Network option on the router instead, made specifically for isolating smart devices. It was disabled.
+15. Learned how to check which device is running DHCP on my network, using ipconfig /all on my PC or checking the router's LAN/DHCP settings page.
+Confirmed I had already pointed my router's DNS at the Pi a while back, when I first set this whole thing up.
+16. Went into Network Connections on the router and found the WAN IPv4 DNS Address field, confirmed the Pi's IP was in there.
+17. Saw a checkbox for Override Subnet Mask and left it unchecked, since it had nothing to do with what I was fixing.
+18. Saved everything and tested to make sure my devices are showing up properly in Pi-hole.
