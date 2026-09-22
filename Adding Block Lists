@@ -1,0 +1,5 @@
+# Adding Pi-hole Block Lists
+
+Creating a DNS block list makes the Internet a nicer place because we want to surf the Internet, making sure that we're blocking ads, trackers, phishing, malware, scams, and other unwanted domains network-wide. 
+Because I'm building a Pi-hole on my Raspberry Pi 5, I wanted to research any infamous blocklists I can pull from that will save me time. 
+
