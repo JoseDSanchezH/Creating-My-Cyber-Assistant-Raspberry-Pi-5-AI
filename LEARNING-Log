@@ -1,0 +1,27 @@
+# Questions and Answers for myself while learning about Networking
+
+There are a lot of things I don't know about networking yet that I'm still going to be questioning. 
+So, while I'm working on Pi-hole and WireGuard, I'm going to be researching a lot of these things.
+I'm looking at my dashboard and trying to figure out exactly what I'm looking at. So one of the things I'm looking at right now is DNS queries.
+
+What is a DNS Query? 
+I know that DNS is a Domain Name System where an IP address of a website that we visit instead of having a number string number it's given a name that is readable.
+A DNS query is a request sent from a client, like a computer, smartphone, or router, to a DNS server to translate a human-readable domain.
+
+Because computers communicate across networks using numerical IP addresses rather than text names, DNS queries access the Internet phonebook lookups./ 
+There are three types of DNS queries. DNS resolution relies on three primary query types, depending on how strict the request is and how the DNS server is expected to respond.
+
+Recursive query: the sender, which is the client or my browser, to the DNS resolver, which is the ISP, Cloudflare. The behavior is that the client demands a complete answer, and the resolver must either return the exact IP address or an error stating that the main does not exist. 
+The resolver does all the heavy lifting behind the scenes to find the answer
+
+Iterative query: the sender is the DNS resolver to the authoritative DNS hierarchy servers, which are root, TLD, and authoritative name servers.
+The resolver is asking, "Do you have this IP address?" If the target server doesn't have the record of it, it will respond with a referral, which gives the address of another name server further down the hierarchy that is most likely to known. 
+The resolver then queries that next server directly
+
+Non-recursive query: a client or resolver queries a server that already holds the answer.
+This occurs when the query DNS server either holds the official record or already has the IP stored in its local cache, allowing an instant response without querying other servers.
+
+Step by step:  when I type google.com into a web browser, the following lookup sequence occurs: the local cache will check if the browser and operating system are in the DNS cache, and if it finds it, then the lookup stops immediately. If it does not see it, then the OS sends a recursive query to a configured DNS resolver. 
+The resolver then sends an iterative query to the root name server, and the root server points the resolver to the top-level domain server responsible for google.com.
+The top-level domain server queries google.com, and we'll send a response with the IP of the authoritative name server holding the specific DNS record for google.com.
+The authoritative response queries, which then return the exact IP address associated with google.com, and then the resolver sends the IP back to my browser and caches the result locally for a set period of time, which will be the time to live (TTL).
