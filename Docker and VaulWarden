@@ -225,6 +225,10 @@ I need to log into my Pi-hole dashboard in my browser, go to settings and, then 
 
 ![Adding the Local DNS Record in Pi-hole](screenshots/36-pihole-local-dns-record.png)
 
+11. With the domain now resolving to the Pi, I opened it in my browser and got Vaultwarden's login page.
+
+![Vaultwarden's login page loading over HTTPS](screenshots/37-vaultwarden-login-page.png)
+
 
 
 
