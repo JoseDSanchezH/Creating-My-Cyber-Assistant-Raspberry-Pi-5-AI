@@ -1,0 +1,37 @@
+## Docker/ VaultWarden
+
+I was doing research and wanted to learn Docker itself, the tools that run containers, and add Vaultwarden, a password vault application running in a container.
+
+## Steps Taken
+
+1. I first need to SSH into my Pi, same as always "ssh josecyber@<your-pi-ip>"
+Then install Docker using their official install script: 
+"curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
