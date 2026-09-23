@@ -1,6 +1,12 @@
-## Docker/ VaultWarden
+## Docker/ VaultWarden / Caddy
 
 I was doing research and wanted to learn Docker itself, the tools that run containers, and add Vaultwarden, a password vault application running in a container.
+
+Vaultwarden is an open-source and self-hosted version of the Bitwarden server. It's a password manager where you can store passwords, 2FA codes, passkeys, and so much more, like credit cards and SSH keys. A couple of days ago, I actually got an e-mail from Google saying that some of my passwords might have been taken or breached, so this will allow me to keep my passwords from every single website that I've been creating accounts on secret, private, and within my own network so it will not be breached by hackers or threat actors. 
+
+Caddy is a web server, but the specific thing that I want to build around it will be a feature called HTTPS. Normally, when setting up HTTPS, I manually have to get a certificate, install it and remember to renew it before it expires. Caddy handles all of that on its own; it requests a certificate, keeps it renewed, and redirects regular HTTP traffic to HTTPS automatically without me having to manage it hand by hand. Caddy's going to be sitting between my browser and my phone and Vaultwarden. When a request comes in for my domain, which will be on DuckDNS, Caddy is going to be the one that will actually terminate the HTTPS connection, meaning it's the piece proving yes this is really your server using its certificate, and then it will forward the request behind the scenes to Vaultwarden itself never has to deal with the certificates at all. Detox plane to HTTP to Caddy internally, and Caddy is the only thing exposed on port 443.
+
+
 
 ## Steps Taken
 
@@ -8,6 +14,247 @@ I was doing research and wanted to learn Docker itself, the tools that run conta
 Then install Docker using their official install script: 
 "curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh"
+
+(insert png)
+2. I want to confirm that the group was created, and I will add myself to it.
+
+I will type this in the terminal: "sudo usermod -aG docker $USER"
+
+sudo — run this command with administrator privileges. Changing user permissions requires that.
+usermod — the Linux command for modifying an existing user account.
+-aG — actually two flags combined: -a means "append" (add to, don't remove anything already there), and -G means "supplementary group." Together they mean "add this user to a group, without kicking them out of any group they're already in." That -a matters, if you left it off, this command would replace all of your existing group memberships with just this one, which isn't what you want.
+docker — the specific group you're adding yourself to, created when Docker is installed.
+$USER — an environment variable that automatically holds your current username (josecyber)  so the command works without typing my username out manually.
+
+
+(insert png) 
+
+
+Here is some of the general help on what commands do in Docker. I will study this for a while. 
+
+Options:
+  -a, --append                  append the user to the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -b, --badname                 allow bad names (DEPRECATED)
+  -c, --comment COMMENT         new value of the GECOS field
+  -d, --home HOME_DIR           new home directory for the user account
+  -e, --expiredate EXPIRE_DATE  set account expiration date to EXPIRE_DATE
+  -f, --inactive INACTIVE       set password inactive after expiration
+                                to INACTIVE
+  -g, --gid GROUP               force use GROUP as new primary group
+  -G, --groups GROUPS           new list of supplementary GROUPS
+  -h, --help                    display this help message and exit
+  -l, --login NEW_LOGIN         new value of the login name
+  -L, --lock                    lock the user account
+  -m, --move-home               move contents of the home directory to the
+                                new location (use only with -d)
+  -o, --non-unique              allow using duplicate (non-unique) UID
+  -p, --password PASSWORD       use encrypted password for the new password
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+  -r, --remove                  remove the user from only the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -R, --root CHROOT_DIR         directory to chroot into
+  -s, --shell SHELL             new login shell for the user account
+  -u, --uid UID                 new UID for the user account
+  -U, --unlock                  unlock the user account
+  -v, --add-subuids FIRST-LAST  add range of subordinate uids
+  -V, --del-subuids FIRST-LAST  remove range of subordinate uids
+  -w, --add-subgids FIRST-LAST  add range of subordinate gids
+  -W, --del-subgids FIRST-LAST  remove range of subordinate gids
+  -Z, --selinux-user SEUSER     new SELinux user mapping for the user account
+      --selinux-range SERANGE   new SELinux MLS range for the user account
+
+
+
+
+3. I want to make sure that Docker is working and pull a tiny test image and run it. If my username was successfully added to the docker group, this should work without needing to type sudo in front of it. If it complains about permission denied, then that tells me that the group membership didn't take effect.
+
+(insert png)
+
+
+
+4. Now that I know Docker is working end to end, I wanna set up the project folder and a secret file for VaultWarden. 
+With these commands: "mkdir -p ~/vaultwarden && cd ~/vaultwarden
+
+Grabbed my DuckDNS token from duckdns.org and added it to that .env file, along with my domain.
+
+Generated an admin token for Vaultwarden's admin panel: openssl rand -base64 48
+
+This makes a long random string I control myself, instead of looking one up. It locks down the admin panel, the part of Vaultwarden that can see and manage the whole vault, so it's not something I wanted to leave unprotected.
+
+
+(inset photo) I will be adding my domain information to this file, along with the code it generated. 
+
+
+5. This is where Caddy comes into play. Caddy will add a temporary DNS record using my DuckDNS token to prove ownership, which is why I don't need any port open publicly for this to work. This will sit in front of another A record and will handle HTTPS for it, and it will be called a reverse proxy, which is an extremely common piece of the real infrastructure most self-hosted setups and plenty of production companies use for this exact reason.
+
+I need to create the Dockerfile. I need Caddy to know how to talk to DuckDNS out of this box. 
+
+On terminal: "cd ~/vaultwarden
+nano Dockerfile"
+
+Then I will type 
+"FROM caddy:builder AS builder
+RUN xcaddy build --with github.com/caddy-dns/duckdns
+
+FROM caddy:latest
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy"
+
+FROM caddy:builder AS builder — starts from Caddy's special "builder" image, which has the Go compiler and build tools needed to compile Caddy from source. We're naming this stage builder so we can reference it later.
+RUN xcaddy build --with github.com/caddy-dns/duckdns — xcaddy is Caddy's own official build tool. Stock Caddy doesn't include every possible plugin, so xcaddy recompiles Caddy from source with the specific plugin you ask for bolted in, in this case, the DuckDNS module that lets Caddy prove domain ownership through DuckDNS.
+FROM caddy:latest — this starts a second, completely separate image, the normal lightweight Caddy image, no build tools included.
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy — this reaches back into the first stage and grabs just the finished Caddy program, no compiler, no source code, no leftover build junk, and drops it into the clean image. This two-stage pattern is called a multi-stage build. The point is the final image stays small and clean, you get the custom binary without shipping the entire toolchain that built it.
+
+
+
+6. I now need to create a Caddyfile, and this will be the actual configuration that will tell it what domain to serve, how to get its certificate, and where to send traffic. 
+
+On Terminal: "nano Caddyfile" 
+{$DOMAIN} {
+    reverse_proxy vaultwarden:80
+    tls {
+        dns duckdns {env.DUCKDNS_TOKEN}
+    }
+}
+
+Then Save and Exit. 
+
+7. Now I will create a docker-compose.yml, which is the file that defines and connects both containers. 
+
+On Terminal: nano docker-compose.yml
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - DOMAIN=https://${DOMAIN}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    volumes:
+      - vw-data:/data
+    networks:
+      - internal
+
+  caddy:
+    build: .
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - vaultwarden
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  vw-data:
+  caddy-data:
+  caddy-config:
+
+Save and Exit. 
+
+8. I want to confirm with ls -la. 
+
+(insert png) 
+
+
+9. Now I want to build the images and start both containers. I need to make sure I'm in the Project folder and build with the following command: "docker compose up -d --build".
+Let it run and finish. 
+
+I ran into an error. 
+
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint caddy (Code) failed to bind host port 0.0.0.0:443/tcp: address already in use. 
+
+   - Seems like port 443 is in use, but I know thats because of Pi-hole. Let's confirm. Im going to run "sudo ss -tlnp | grep :443"
+(Insert error png here)
+-t — only show TCP connections (as opposed to UDP or other types).
+-l — only show sockets that are listening, meaning actively waiting for incoming connections, not established ones already in progress.
+-n — show numeric addresses and port numbers instead of trying to resolve them into names. Makes the output faster and avoids unrelated DNS lookups.
+-p — show which process owns each socket, meaning the actual program name and process ID. This is the part that actually answers "what's using this port," without it you'd just see that something is listening on 443, not what.
+| grep :443 — the pipe sends the full output of ss into grep, which then filters it down to only lines containing ":443," since ss alone would show you every listening port on the whole system, and you only care about this one.
+
+
+I will have to tell Pi-hole to stop listening on 443 and keep port 80 for its regular dashboard. Pi-hole listens on both port 80 and 443 for HTTPS access to the dashboard, and it uses a self-signed certificate. I needed to disable port 443 on Pi-hole in order for Caddy to grab port 443 for itself. 
+
+On Terminal: sudo pihole-FTL --config webserver.port "80o,[::]:80o"
+
+That removes the 443os and [::]:443os entries that were in Pi-hole's default config, while keeping port 80 for both IPv4 and IPv6, so its dashboard keeps working over plain HTTP exactly like it always has.
+
+
+Then restart the service so it can take effect. 
+
+On Terminal: sudo systemctl restart pihole-FTL
+
+And confirm 443 is free.
+
+In Terminal: sudo ss -tlnp | grep :443
+
+
+(Insert png) 
+
+Now redo step 9. 
+
+It started to work, but I've realized I needed an Admin Token. 
+
+(Insert png)
+
+An admin token is basically a password for the special part of Vaultwarden most users will never see in the admin panel. Regular Vaultwarden users log in with their e-mail and master password to reach their own vault. It separates the area meant only for whoever runs the server, and from there you can see every registered user, delete accounts, invite new users, and change server-wide settings.
+I need to generate a token because there is no default admin or password baked into Vaultwarden yet. If there were some default password, anyone who's ever set up Vaultwarden before would know that it'd be an open door on every install that uses the default setting. If I generate my own random string with the command "openssl rand -base64 48," this store only has a key that exists only on my machine, and no one else could ever guess or look it up. The reason we are being careful and keeping it out of the screenshots for this particular GitHub is that whoever takes this token effectively holds control over my entire Vaultwarden server, not just one Vault.
+
+
+10. Now that we have a real certificate confirmed. I need to set up my Pi-hole's local DNS records so the domain actually resolves to the Pi when I'm on my home network or WireGuard. 
+
+I need to log into my Pi-hole dashboard in my browser, go to settings and, then go to Local DNS Records on the left-hand sidebar and within local DNS section with the DNS records I would need to type in a new record, which would be my domain and my IP address of the Pi. 
+
+(insert png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
