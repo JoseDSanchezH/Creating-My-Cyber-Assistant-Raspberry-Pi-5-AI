@@ -4,7 +4,7 @@ There are a lot of things I don't know about networking yet that I'm still going
 So, while I'm working on Pi-hole and WireGuard, I'm going to be researching a lot of these things.
 I'm looking at my dashboard and trying to figure out exactly what I'm looking at. So one of the things I'm looking at right now is DNS queries.
 
-What is a DNS Query? 
+# What is a DNS Query? 
 I know that DNS is a Domain Name System where an IP address of a website that we visit instead of having a number string number it's given a name that is readable.
 A DNS query is a request sent from a client, like a computer, smartphone, or router, to a DNS server to translate a human-readable domain.
 
@@ -15,7 +15,7 @@ Recursive query: the sender, which is the client or my browser, to the DNS resol
 The resolver does all the heavy lifting behind the scenes to find the answer
 
 Iterative query: the sender is the DNS resolver to the authoritative DNS hierarchy servers, which are root, TLD, and authoritative name servers.
-The resolver is asking, "Do you have this IP address?" If the target server doesn't have the record of it, it will respond with a referral, which gives the address of another name server further down the hierarchy that is most likely to known. 
+The resolver is asking, "Do you have this IP address?" If the target server doesn't have the record of it, it will respond with a referral, which gives the address of another name server further down the hierarchy that is most likely to know. 
 The resolver then queries that next server directly
 
 Non-recursive query: a client or resolver queries a server that already holds the answer.
@@ -25,3 +25,35 @@ Step by step:  when I type google.com into a web browser, the following lookup s
 The resolver then sends an iterative query to the root name server, and the root server points the resolver to the top-level domain server responsible for google.com.
 The top-level domain server queries google.com, and we'll send a response with the IP of the authoritative name server holding the specific DNS record for google.com.
 The authoritative response queries, which then return the exact IP address associated with google.com, and then the resolver sends the IP back to my browser and caches the result locally for a set period of time, which will be the time to live (TTL).
+
+
+
+# What is Docker? 
+
+I had an interview a while back, and I was asked what Docker is, and all I could think of was a container that helps run programs, systems, operating systems, and services in the background. I knew I didn't really ever play with Docker in my home lab, so I couldn't speak too much about it. And I want to take this time to learn more about Docker and how to apply it to my Raspberry Pi.
+
+A Docker container contains packages and applications together with everything it needs to run: its code, its settings, and its dependencies to oneself contained unit. That container runs the same whether it's on my Pi, a laptop, or a cloud server because it's not relying on whatever happens to already be installed on the machine. Unlike AVM it's doesn't carry its own operating system it shares the host, which is why containers are lightweight and start in seconds instead of minutes.
+
+A lot of companies run at least some sort of internal tools in containers every day. Right now pie hole and WireGuard are installed directly on my π's operating system. If one of them ever needs a weird dependency or if something breaks, it can affect everything within the Raspberry Pi itself. So if I run a container and keep each service on its own isolated box, I can also add or remove services without building or rebuilding, without them touching each other.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
