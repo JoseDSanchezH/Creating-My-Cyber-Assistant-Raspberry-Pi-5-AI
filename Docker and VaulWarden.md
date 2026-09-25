@@ -234,7 +234,8 @@ This is where you would input your email and a master password. I will not discl
 
 
 13. I followed the tour that VaultWarden created.
-(insert PNG) 
+![Vaultwarden onboarding tour, 1 of 3](screenshots/38-vaultwarden-tour-1of3.png)
+![Vaultwarden onboarding tour, 3 of 3](screenshots/39-vaultwarden-tour-3of3.png)
 14. I restarted the Vaultwarden container to test whether data actually saves to the volume, not just sitting in the container's temporary memory, by inputting " docker compose restart vaultwarden"
 
 15. After refreshing my Pi and then connecting my phone to WireGuard, I opened the same domain in my phone's browser. I logged in successfully with my new credentials and accessed my Vault with my VPN.
