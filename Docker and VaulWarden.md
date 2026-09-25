@@ -229,7 +229,17 @@ I need to log into my Pi-hole dashboard in my browser, go to settings and, then 
 
 ![Vaultwarden's login page loading over HTTPS](screenshots/37-vaultwarden-login-page.png)
 
+12. On the homepage, I created my Vaultwarden account through the login page, clicking "Create Account".
+This is where you would input your email and a master password. I will not disclose my information here, but anyone following these steps would type in their actual email and master password that they will remember. I encourage you to never forget this password. If you do, you will lose access to this Vault.
 
+
+13. I followed the tour that VaultWarden created.
+(insert PNG) 
+14. I restarted the Vaultwarden container to test whether data actually saves to the volume, not just sitting in the container's temporary memory, by inputting " docker compose restart vaultwarden"
+
+15. After refreshing my Pi and then connecting my phone to WireGuard, I opened the same domain in my phone's browser. I logged in successfully with my new credentials and accessed my Vault with my VPN.
+
+16. I then disconnected my VPN on my phone and tried loading the same domain through regular WiFi. It never connected to Vaultwarden; it actually kept refreshing over and over till it dropped the connection. 
 
 
 
