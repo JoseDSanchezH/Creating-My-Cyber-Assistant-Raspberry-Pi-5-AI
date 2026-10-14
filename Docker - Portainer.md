@@ -10,6 +10,9 @@ Portainer started in 2016 because Neil Cresswell was running a cloud hosting bus
 
 *Credits: https://www.helpnetsecurity.com/2024/07/01/portainer-open-source-docker-kubernetes-management/
 
+
+<img width="1420" height="740" alt="Portainer Website2026-10-14 100544" src="https://github.com/user-attachments/assets/0b7874db-4d2c-42d4-97d2-e79e57ce6c2c" />
+
 # Steps Taken
 
 1. I need to 1st create a volume so Portainer's own data survives if the container gets rebuilt. On the command line, I type in: docker volume create portainer_data
@@ -32,6 +35,7 @@ Port 9443 was just whatever was free. Pi-hole already had 80, Caddy had 443, so 
 
 
 2. I figured I'd hit the login page and just get asked to set a username and password, like most self-hosted things. Instead, I got a screen asking for a setup token, which I didn't have and wasn't expecting. I researched how to use the following token to log in and found the command. I typed in "docker logs portainer". Small catch: the token expires within about 5 minutes, so I needed to work fast. 
+
 
 
 ![Portainer setup token screen](screenshots/40-portainer-setup-token.png)
